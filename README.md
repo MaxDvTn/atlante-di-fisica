@@ -1,50 +1,56 @@
-# Atlas of Physics
+# Atlante di Fisica
 
-An interactive textbook. Each chapter is one simple motion drawn in 3D like a textbook diagram
-(paper solids, ink edges, one lit thing). No apparatus: only the
-moving object, its vectors, axes and graphs. Scroll turns the pages and moves the camera; hover
-lights a thing; click breaks it down (a vector into components, a graph into slope and area).
+Un libro di testo interattivo in 3D. Ogni capitolo illustra un fenomeno fisico disegnato in 3D nello stile di una tavola tecnica cartacea (solidi di carta, contorni a china, elementi illuminati). Nessun apparato superfluo: solo l'oggetto in movimento, i suoi vettori, gli assi cartesiani e i grafici orari. Lo scroll volta le pagine e orienta la telecamera; il passaggio del cursore illumina un componente; il clic ne mostra la scomposizione vettoriale o analitica.
 
 ```
-index.html              contents (chapter cards)
-atlas.css               shared tokens (Anatomy light theme)
+index.html              Indice generale e copertina
+atlas.css               Design system condiviso (tema chiaro Anatomy)
 engine/
-  render.js             renderer: paper shading + normal/depth ink edges, picking, explode, camera
-  parts.js              paper materials, solid arrows, line helpers
+  render.js             Motore grafico: ombreggiatura cartacea + contorni normali/profondità, picking, molle smorzate
+  parts.js              Materiali cartacei, frecce vettoriali 3D, quote e assi
+  book.js               Controller del libro: scroll → voltapagina 3D + telecamera, tab Teoria / Esercizi
+  xrefs.js              Analogie e confronti incrociati tra capitoli
 kinematics/
-  model.js              the physics (a ball thrown up; a projectile): every motion and number
-  checks.mjs            invariants of the model — node <chapter>/checks.mjs (every chapter has one)
-  world.js              the figure: ball, axis, arrows, strobe, graphs, projectile and shadow
-  pages.js              chapter text (after the AP Physics graphic organizers), cameras, breakdowns
-  practice.js           AP-style questions per page ({ pageIndex: [{ q, choices, answer, why } | { q, solution }] })
-  main.js               scroll → page turn + camera; hover / click / Esc
+  model.js              Modello fisico analitico: formule pure, unità SI, calcolo differenziale e integrale
+  checks.mjs            Invarianti e test matematici del modello (node <capitolo>/checks.mjs)
+  world.js              Scena 3D: pallina, asse, vettori, stroboscopia, grafici, proiettile
+  pages.js              Testo delle pagine, configurazioni di telecamera, scomposizioni (PLATES)
+  practice.js           Eserciziario interattivo contestuale ({ pageIndex: [{ q, choices, answer, why }] })
+  main.js               Entry point del capitolo: scroll, interazioni, telemetria in tempo reale
 newton/ circular/ energy/ momentum/ oscillations/ rotation/ fluids/
-                        AP Physics 1 + Physics C: Mechanics, chapters 2–8 (Physics C pages tagged in their kicker)
+                        Meccanica classica (Capitoli 1–8)
 electrostatics/ gauss/ potential/ capacitors/ circuits/ magnetism/ induction/
-                        AP Physics C E&M, chapters 9–15
-                        every chapter: model, checks, world, pages, main, index.html
-engine/book.js          the shared book: scroll → page turn + camera, hover / click / tap, labels,
-                        practice, deep links (<chapter>/#<page index>), pager on small screens
-engine/xrefs.js         "Compare" analogies between chapters, shown on both pages
-equations/              the AP equation sheets, each equation linked to the pages that show it
-tools/shoot.mjs         headless screenshots of every page and a few opened parts
-tools/uitest.mjs        one page by deep link: practice, compare links, overflow (any viewport, touch)
-tools/taptest.mjs       phone viewport: a tap opens a breakdown
-tools/perf.mjs          per-chapter load time, fps, script and layout cost
-tools/allpages.mjs      every page by deep link: practice present, no console errors
-tools/dumptext.mjs      the rendered text of every page of a chapter, for proofreading
-tools/prof.mjs          CPU profile of one chapter; tools/loadprof.mjs the same for page load
-tools/picktest.mjs      hover near a moving part, then click: does it open?
-tools/scrolltest.mjs    scroll an overflowing left page to the bottom and screenshot it
+                        Elettromagnetismo (Capitoli 9–15)
+equations/              Formulario interattivo, collegato alle pagine corrispondenti
+tools/test_modes.mjs    Test automatizzato E2E per il selettore Teoria / Esercizi
 ```
 
-Tools need `npm install` (puppeteer-core) and Chrome (set `CHROME` to its path if not at the macOS default). Screenshots: `CHAPTER=newton PARTS=rest:0,car:5 node tools/shoot.mjs shots/newton` (PARTS = key or key:page)
+## Esecuzione in locale
 
-Run: `python3 -m http.server 8137` (any static server; three.js loads from jsDelivr) and open http://127.0.0.1:8137/
-Keys: ← → turn pages, Esc puts a part back. Links: `newton/#4` opens page 2.4.
-Phones and tablets: the figure stacks over the text, swipes snap to whole pages, a tap breaks a part down;
-resolution steps down by itself if frames run slow.
+Avvia qualsiasi server web statico nella cartella principale:
+```bash
+python3 -m http.server 8137
+```
+e apri [http://localhost:8137/](http://localhost:8137/) nel browser.
 
-AP® is a trademark of the College Board, which does not endorse this site. The equation sheet follows the published AP Physics equation tables.
+## Controlli di navigazione
+* **Frecce `←` / `→` o Scroll:** voltano le pagine in 3D.
+* **Selettore `[ 📖 Teoria ]` / `[ ✍️ Esercizi ]`:** passa dalla lettura della teoria al quaderno degli esercizi contestuali.
+* **Clic / Tap sul modello 3D:** mostra la scomposizione del componente selezionato.
+* **`Esc`:** richiude la scomposizione e riposiziona i vettori.
+* **Deep link:** `kinematics/#3` apre direttamente la pagina 1.3.
+* **Dispositivi mobili e tablet:** layout verticale con la figura in alto e il testo in basso; swipe con snap alla pagina.
 
-MIT licensed.
+## Test e verifiche
+
+Esecuzione dei controlli di tutti i capitoli e dei collegamenti del formulario:
+```bash
+npm run check
+```
+
+Esecuzione del test automatico dell'interfaccia:
+```bash
+npm run test:modes
+```
+
+Licenza MIT.

@@ -17,7 +17,7 @@ for (const c of CHAPTERS) {
   const src = fs.readFileSync(path.join(ROOT, c, 'pages.js'), 'utf8');
   const list = [...src.matchAll(/kicker:\s*'([^']*)',\s*title:\s*'([^']*)'/g)];
   list.forEach(([, k, t], i) => {
-    const no = k.startsWith('Chapter') ? 'Ch. ' + k.split(' ')[1] : k.split(' ')[0];
+    const no = (k.startsWith('Chapter') || k.startsWith('Capitolo')) ? 'Cap. ' + k.split(' ')[1] : k.split(' ')[0];
     pages[`${c}/${i}`] = [no, t];
   });
 }
@@ -33,7 +33,7 @@ let links = 0;
 const chips = refs => {
   if (refs === null) return '';                      // math reference rows: no chips, no mark
   const list = refs.split(/\s+/).filter(Boolean);
-  if (!list.length) return '<span class="none">not shown yet</span>';
+  if (!list.length) return '<span class="none">non ancora presente</span>';
   return list.map(r => {
     if (!pages[r]) throw new Error('unknown page ' + r);
     const [c, i] = r.split('/'); links++;
@@ -448,19 +448,19 @@ const html = `<!doctype html>
 </style>
 </head>
 <body>
-  <header><a href="../">Atlas of Physics</a><span>The AP sheets, linked to the pages</span><a class="gh" href="https://github.com/nathanliow/atlas-of-physics" aria-label="Source on GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></header>
+  <header><a href="../">Atlante di Fisica</a><span>Formulario delle equazioni</span><a class="gh" href="https://github.com/MaxDvTn/atlante-di-fisica" aria-label="Codice sorgente su GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a></header>
   <section class="hero">
-    <h1>Equation sheet</h1>
-    <p>The official AP Physics 1 and Physics C equation sheets, line by line. Each equation links to every page of the atlas that shows or uses it.</p>
+    <h1>Formulario di fisica</h1>
+    <p>Le formule fondamentali di Meccanica ed Elettromagnetismo. Ogni equazione è collegata alle pagine corrispondenti dell'Atlante che la mostrano o la utilizzano.</p>
   </section>
-  <nav aria-label="Sheets"><div class="in">
+  <nav aria-label="Sezioni del formulario"><div class="in">
     ${SHEETS.map(S => `<a href="#${S.id}">${S.nav}</a>`).join('\n    ')}
-    <input type="search" id="q" placeholder="Filter: torque, ω, Gauss…" aria-label="Filter equations" autocomplete="off">
+    <input type="search" id="q" placeholder="Filtra: momento, gravità, Gauss…" aria-label="Cerca equazioni" autocomplete="off">
   </div></nav>
   <main>${sectionHTML}
-    <p class="empty" id="empty">No equation matches.</p>
+    <p class="empty" id="empty">Nessuna equazione corrispondente.</p>
   </main>
-  <footer>Transcribed from the Table of Information in the College Board’s AP Physics 1, Physics C: Mechanics and Physics C: Electricity and Magnetism Course and Exam Descriptions (effective fall 2024; sheets © 2025 College Board), in the sheets’ order and notation. Arrows mark vectors, as on the sheets. The names beside each equation are the atlas’s labels, not part of the sheets. Chips give section and page; muted rows are on the sheet but not drawn in the atlas yet.</footer>
+  <footer>Formulario dell’Atlante di Fisica per Meccanica ed Elettromagnetismo. Le frecce indicano grandezze vettoriali. I collegamenti rimandano direttamente alle pagine con simulazione 3D e spiegazione teorica.</footer>
 <script>
   // Filter rows by their text (equation, name and linked page titles); hide groups and sheets left empty.
   const q = document.getElementById('q'), norm = s => s.normalize('NFKD').toLowerCase();
