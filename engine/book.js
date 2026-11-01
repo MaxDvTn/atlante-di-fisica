@@ -37,7 +37,7 @@ export function startBook(chapter) {
   const practiceHtml = i => {
     const qs = PRACTICE[i] || [];
     if (!qs.length) return '';
-    return `<section class="practice"><div class="kicker">Esercizi</div>${qs.map((q, n) => `<div class="q" data-q="${n}">
+    return `<section class="practice">${qs.map((q, n) => `<div class="q" data-q="${n}">
       <p class="qtext"><span class="qn">${n + 1}</span>${q.q}</p>
       ${q.choices ? `<ol class="choices">${q.choices.map((c, k) => `<li><button type="button" data-c="${k}"><span class="letter">${'ABCDE'[k]}</span><span>${c}</span></button></li>`).join('')}</ol>`
         : '<button type="button" class="reveal">Mostra la soluzione</button>'}
@@ -52,9 +52,53 @@ export function startBook(chapter) {
   };
   // small screens: the page ends with a way on to the next (book.css shows it there)
   const turnHtml = i => i < N - 1 ? `<button type="button" class="turn" data-turn="${i + 1}"><span class="kicker">Pagina successiva</span>${PAGES[i + 1].title} →</button>` : '';
-  const sheetHtml = i => { const p = PAGES[i]; return `<div class="kicker">${p.kicker}</div><h1>${p.title}</h1><div class="sub">${p.sub}</div>${p.body}${xrefHtml(i)}${practiceHtml(i)}${turnHtml(i)}`; };
+  const sheetHtml = (i, mode = 'theory') => {
+    const p = PAGES[i];
+    const qs = PRACTICE[i] || [];
+    const hasPractice = qs.length > 0;
+    const modeTabs = hasPractice ? `<div class="page-modes" role="tablist">
+      <button type="button" role="tab" class="mode-btn ${mode === 'theory' ? 'active' : ''}" data-mode="theory" aria-selected="${mode === 'theory'}">
+        <span class="mode-icon">📖</span> Teoria
+      </button>
+      <button type="button" role="tab" class="mode-btn ${mode === 'practice' ? 'active' : ''}" data-mode="practice" aria-selected="${mode === 'practice'}">
+        <span class="mode-icon">✍️</span> Esercizi <span class="badge">${qs.length}</span>
+      </button>
+    </div>` : '';
+
+    return `${modeTabs}
+      <div class="mode-content mode-theory" ${mode !== 'theory' ? 'hidden' : ''}>
+        <div class="kicker">${p.kicker}</div>
+        <h1>${p.title}</h1>
+        <div class="sub">${p.sub}</div>
+        ${p.body}
+        ${xrefHtml(i)}
+      </div>
+      ${hasPractice ? `<div class="mode-content mode-practice" ${mode !== 'practice' ? 'hidden' : ''}>
+        <div class="kicker">Eserciziario · ${p.kicker}</div>
+        <h1>${p.title}</h1>
+        <div class="sub">Domande e problemi di verifica</div>
+        ${practiceHtml(i)}
+      </div>` : ''}
+      ${turnHtml(i)}`;
+  };
   // answering: click a choice to mark it and show the worked solution
   $('sheet').addEventListener('click', e => {
+    const modeBtn = e.target.closest('.mode-btn');
+    if (modeBtn) {
+      const mode = modeBtn.dataset.mode;
+      const sheet = $('sheet');
+      sheet.querySelectorAll('.mode-btn').forEach(b => {
+        const active = b.dataset.mode === mode;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-selected', active);
+      });
+      const th = sheet.querySelector('.mode-theory');
+      const pr = sheet.querySelector('.mode-practice');
+      if (th) th.hidden = mode !== 'theory';
+      if (pr) pr.hidden = mode !== 'practice';
+      $('left').scrollTop = 0;
+      return;
+    }
     const b = e.target.closest('button'), q = b && b.closest('.q');
     if (b?.dataset.turn) return goto(+b.dataset.turn);
     if (!q) return;

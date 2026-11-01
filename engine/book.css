@@ -176,6 +176,30 @@
 }
 @media (min-width: 901px) { .page.left { display: flex; flex-direction: column; } .page.left > .sheet { flex: 1 0 auto; } }
 
+/* ---- page modes: theory vs practice ---- */
+.page-modes {
+  display: inline-flex; align-items: center; gap: 4px;
+  background: #f0f0ec; padding: 4px; border-radius: 999px;
+  margin-bottom: 22px; border: 1px solid var(--faint);
+}
+.mode-btn {
+  border: 0; background: transparent; padding: 6px 14px; border-radius: 999px;
+  font: 500 12px/1 var(--mono); letter-spacing: .04em; color: var(--muted);
+  cursor: pointer; transition: all .15s ease; display: inline-flex; align-items: center; gap: 6px;
+}
+.mode-btn:hover { color: var(--strong); }
+.mode-btn.active {
+  background: var(--card); color: var(--strong); box-shadow: 0 1px 3px rgba(0,0,0,.08);
+}
+.mode-btn .badge {
+  font-size: 10px; background: rgba(0,0,0,.07); color: var(--hi); padding: 1px 6px; border-radius: 999px; font-weight: 600;
+}
+.mode-btn.active .badge {
+  background: var(--hi); color: var(--card);
+}
+.mode-content { width: 100%; }
+.mode-practice .practice { margin-top: 14px; padding-top: 0; border-top: 0; }
+
 /* ---- compare: analogies with other chapters ---- */
 .xref { margin: 22px 0 6px; padding: 12px 0 2px 16px; border-left: 2px solid #3d63a8; max-width: 62ch; }
 .xref p { margin: 8px 0 10px; font-size: 15px; }

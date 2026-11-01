@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "Un libro di testo interattivo 3D per lo studio della fisica",
   "scripts": {
-    "check": "for c in kinematics newton circular energy momentum oscillations rotation fluids electrostatics gauss potential capacitors circuits magnetism induction; do node $c/checks.mjs > /dev/null || { echo FAIL $c; exit 1; }; done; node equations/check.mjs"
+    "check": "for c in kinematics newton circular energy momentum oscillations rotation fluids electrostatics gauss potential capacitors circuits magnetism induction; do node $c/checks.mjs > /dev/null || { echo FAIL $c; exit 1; }; done; node equations/check.mjs",
+    "test:modes": "node tools/test_modes.mjs"
   },
   "keywords": [],
   "author": "",
